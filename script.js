@@ -1,6 +1,5 @@
 console.log("Products file loaded:", window.products);
 
-const screenshotBtn = document.getElementById("screenshotBtn");
 const searchInput = document.getElementById("searchInput");
 const cards = document.querySelectorAll(".card");
 const categories = document.querySelectorAll(".category");
@@ -41,7 +40,6 @@ const viewerSize = document.getElementById("viewerSize");
 const viewerColor = document.getElementById("viewerColor");
 const viewerFit = document.getElementById("viewerFit");
 const viewerPrice = document.getElementById("viewerPrice");
-const viewerStatus = document.getElementById("viewerStatus");
 
 productImages.forEach(function(image, index){
     image.addEventListener("click", function(){
@@ -50,9 +48,9 @@ productImages.forEach(function(image, index){
         const categoryName = category ? category.id : "ITEM";
 
         const title = card.querySelector("h3").innerText;
-        const sizeText = card.querySelector(".info p").innerText.replace("Size :", "").trim();
+        const firstInfoText = card.querySelector(".info p:not(.price)");
+        const sizeText = firstInfoText ? firstInfoText.innerText.replace("Size :", "").trim() : "";
         const price = card.querySelector(".price").innerText;
-        const status = card.querySelector(".status").innerText;
 
         const codePrefix = categoryName.substring(0, 3).toUpperCase();
         const codeNumber = String(index + 1).padStart(3, "0");
@@ -61,12 +59,40 @@ productImages.forEach(function(image, index){
         viewerTitle.innerText = title;
 
         viewerCode.innerText = "Code : " + (card.dataset.code || codePrefix + codeNumber);
-        viewerSize.innerText = "Size : " + (card.dataset.size || sizeText || "Available size");
-        viewerColor.innerText = "Color : " + (card.dataset.color || "Please check photo");
-        viewerFit.innerText = "Fit : " + (card.dataset.fit || "Regular / Comfortable fit");
+       const beautyCategory = "Beauty";
+const simpleCategories = ["Perfumes", "Accessories", "Food"];
+
+if (categoryName === beautyCategory) {
+    viewerSize.innerText = "Description : " + (card.dataset.description || "Please check item details");
+    viewerColor.innerText = "Quantity : " + (card.dataset.quantity || "Please check item");
+
+    viewerFit.innerText = "";
+
+    viewerSize.style.display = "block";
+    viewerColor.style.display = "block";
+    viewerFit.style.display = "none";
+
+} else if (simpleCategories.includes(categoryName)) {
+    viewerSize.innerText = "Quantity : " + (card.dataset.quantity || "Please check item");
+
+    viewerColor.innerText = "";
+    viewerFit.innerText = "";
+
+    viewerSize.style.display = "block";
+    viewerColor.style.display = "none";
+    viewerFit.style.display = "none";
+
+} else {
+    viewerSize.innerText = "Size : " + (card.dataset.size || sizeText || "Available size");
+    viewerColor.innerText = "Color : " + (card.dataset.color || "Please check photo");
+    viewerFit.innerText = "Fit : " + (card.dataset.fit || "Regular / Comfortable fit");
+
+    viewerSize.style.display = "block";
+    viewerColor.style.display = "block";
+    viewerFit.style.display = "block";
+}
 
         viewerPrice.innerText = price;
-        viewerStatus.innerText = status;
 
         imageViewer.classList.add("active");
     });
@@ -90,15 +116,6 @@ document.addEventListener("keydown", function(e){
     }
 });
 
-screenshotBtn.addEventListener("click", function(){
-    imageViewer.classList.add("screenshot-mode");
-
-    alert("Screenshot Mamsh then send via Whatsapp");
-
-    setTimeout(function(){
-        imageViewer.classList.remove("screenshot-mode");
-    }, 5000);
-});
 
 const currentCategory = document.getElementById("currentCategory");
 const navLinks = document.querySelectorAll(".categories-nav a");
@@ -137,18 +154,22 @@ function createProductCard(product) {
     `;
 }
 
-const coordsContainer = document.getElementById("coordsProducts");
+const logoButton = document.getElementById("logoButton");
+const socialPopup = document.getElementById("socialPopup");
+const closeSocial = document.querySelector(".close-social");
 
-if (coordsContainer) {
-
-    products.forEach(product => {
-
-        if (product.category === "Coords") {
-
-            coordsContainer.innerHTML += createProductCard(product);
-
-        }
-
+if (logoButton && socialPopup && closeSocial) {
+    logoButton.addEventListener("click", function () {
+        socialPopup.classList.add("active");
     });
 
+    closeSocial.addEventListener("click", function () {
+        socialPopup.classList.remove("active");
+    });
+
+    socialPopup.addEventListener("click", function (e) {
+        if (e.target === socialPopup) {
+            socialPopup.classList.remove("active");
+        }
+    });
 }
